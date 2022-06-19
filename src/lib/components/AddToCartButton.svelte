@@ -1,5 +1,5 @@
 <script>
-	import cart, { addToCart, removeFromCart } from '../stores/cart';
+	import cart, { addToCart, removeFromCart } from '$lib/stores/cart';
 
 	export let id;
 
