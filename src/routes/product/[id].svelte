@@ -2,22 +2,21 @@
 	import CartButton from '$lib/components/CartButton.svelte';
 	import AddToCartButton from '$lib/components/AddToCartButton.svelte';
 
-	export let id: number;
 	export let product: App.Product;
-	const {image, name, instruction} = product;
+	const {image, title, description, id} = product;
 </script>
 
 <svelte:head>
-	<title>{name}</title>
+	<title>{title}</title>
 </svelte:head>
 
 <div>
-	<img src={image} alt={name} width='300' height='300'>
+	<img src={image} alt={title} width='300' height='300'>
 	<div>
-		{name}
+		{title}
 	</div>
 	<div>
-		{instruction}
+		{description}
 	</div>
 	<AddToCartButton id={id}/>
 </div>

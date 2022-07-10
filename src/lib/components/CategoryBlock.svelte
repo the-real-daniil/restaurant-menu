@@ -1,0 +1,59 @@
+<script lang="ts">
+	import AddToCartButton from '$lib/components/AddToCartButton.svelte';
+	import { getProductsByCategory } from '../resources/api';
+	import ProductsSkeleton from './ProductsSkeleton.svelte';
+	import { onDestroy } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
+
+	export let category;
+	export let unobserve = () => null;
+	export let isVisible;
+	export let products: any[] = [];
+
+	$: if (products.length === 0 && isVisible && category) {
+			getProductsByCategory(category)
+				.then(result => products = result);
+		}
+
+	$: if (isVisible) {
+		console.log('dispatch visible ', category);
+		dispatch('visible', {
+			category,
+		})
+	}
+
+	onDestroy(unobserve);
+
+</script>
+
+
+<div class='pt-[60px] px-4' id={category}>
+	<h1 class='mb-[40px] pl-2 text-xl font-semibold'>
+		{category}
+	</h1>
+	{#if (products.length > 0)}
+		<div class='grid gap-4 grid-cols-2 grid-rows-2'>
+			{#each products as product}
+				<a href={`/product/${product.id}`} class='block rounded shadow'>
+					<img
+						src={product.image}
+						class='rounded mb-3 h-[150px] w-full object-cover'
+						alt={product.title}/>
+					<div class='font-medium mb-1 text-lg pr-4 pl-4 text-black1'>{product.price}</div>
+					<div class='mb-1.5 text-sm pr-4 pl-4 text-black2'>{product.title}</div>
+					<div class='text-xs mb-2.5 pr-4 pl-4 text-black3'>{product.weight}</div>
+					<AddToCartButton/>
+				</a>
+			{/each}
+		</div>
+	{:else}
+		<ProductsSkeleton count={4}/>
+	{/if}
+</div>
+
+
+
+
+
+

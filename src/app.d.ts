@@ -4,17 +4,12 @@
 // for information about these interfaces
 declare namespace App {
 	type Product = {
-		name: string,
+		title: string,
 		image: string,
 		id: number,
-		instruction?: string,
-	}
-
-	type ProductResponse = {
-		strDrink: string,
-		strDrinkThumb: string,
-		idDrink: number,
-		strInstructions?: string,
+		price: number,
+		description: string,
+		count?: number,
 	}
 
 	// interface Locals {}

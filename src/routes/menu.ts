@@ -1,19 +1,15 @@
 import type {RequestHandler} from '@sveltejs/kit'
+import { getCategories, getProducts } from '../lib/resources/api';
 
 export const get: RequestHandler = async () => {
 	console.log('fetchProducts');
-	const url = 'https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Alcoholic';
 	try {
-		const res = await fetch(url);
-		const data = await res.json();
-		const products = data.drinks.slice(0, 4).map(({strDrink, strDrinkThumb, idDrink}: App.ProductResponse) => ({
-			name: strDrink,
-			image: strDrinkThumb + '/preview',
-			id: idDrink,
-		}));
+		const products = await getProducts()
+		const categories = await getCategories()
 		return {
 			body: {
 				products,
+				categories,
 			},
 		}
 	} catch (err) {
