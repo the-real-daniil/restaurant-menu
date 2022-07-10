@@ -1,9 +1,4 @@
 <script lang="ts">
-	import animateScrollTo from 'animated-scroll-to';
-	import AsyncQueue from '../utils/asyncQueue';
-	import {MENU_EVENT_TYPES} from '../constants';
-	import {onMount} from 'svelte';
-
 	/**
 	 * Из чего состоит карусель:
 	 * 1. данные - нужно создать коллекцию категорий
@@ -24,80 +19,20 @@
 	 * Что стало причиной ее изменения - неважно.
 	 * События будут эмитится из компонента menu.svelte
 	 */
+	import {MENU_EVENT_TYPES} from '../constants';
+	import { createEventDispatcher } from 'svelte';
 
-	export let event;
-	export let categories;
-	let bubble, scrollBar;
-	const menuItemsElems = {}
-	const PADDING = 15;
-	const MENU_ITEM_PADDING = 15;
+	export let bubble, scrollBar, carouselItems, categories, carouselXPadding;
 
-	/** сдвиг бабла */
-	const bubbleGoTo = async (category: string) => {
-		// const width = menuItemsElems[category].getBoundingClientRect().width;
-		const width = menuItemsElems[category].clientWidth;
-		console.log('width', width);
-		const scrollLeft = scrollBar.scrollLeft;
-		const left = menuItemsElems[category].getBoundingClientRect().left;
-		console.log('left', left);
-		bubble.style.width = `${width}px`;
-		bubble.style.transform = `translateX(${left + scrollLeft - PADDING}px)`;
-	}
+	carouselXPadding = 15;
 
-	/** скролл менюшки */
-	const moveScrollBar = async (category: string) => {
-		console.log('moveScrollBar');
-		const left = menuItemsElems[category]?.getBoundingClientRect().left;
-		const scrollLeft = scrollBar.scrollLeft;
-		await animateScrollTo([scrollLeft + left - PADDING, 0], { maxDuration: 200, minDuration: 100, elementToScroll: scrollBar});
-	}
-
-	/** скролл к блоку с категорией */
-	const scrollTo = async (category: string) => {
-		console.log('scrollTo', category);
-		const categoryEl = document.getElementById(category);
-		await animateScrollTo(categoryEl, { maxDuration: 300, minDuration: 100, verticalOffset: -30});
-	}
-
-	const eventsHandler = async ({ category, type }, {lock, unlock}) => {
-		console.log('eventsHandler ', type, category);
-		switch (type) {
-			case MENU_EVENT_TYPES.CLICK:
-				lock();
-				await Promise.all([moveScrollBar(category), bubbleGoTo(category)]);
-				await scrollTo(category);
-				unlock();
-				return;
-			case MENU_EVENT_TYPES.VISIBLE:
-				await moveScrollBar(category)
-				await bubbleGoTo(category)
-				return;
-			default:
-				return;
-		}
-	};
+	const dispatch = createEventDispatcher();
 
 	const clickItemHandler = (category) => {
-		eventsQueue.add({
-			type: MENU_EVENT_TYPES.CLICK,
-			category,
-		});
+			dispatch(MENU_EVENT_TYPES.CAROUSEL_CLICK, {
+				category,
+			})
 	};
-
-	let eventsQueue;
-	onMount(() => {
-		eventsQueue = AsyncQueue
-			.channels(1)
-			.process(eventsHandler)
-			.success(() => console.log('menu item has been changed'))
-			.failure((err, task) => console.error(`failure: ${err} ${task.category}`))
-	})
-
-	$: if (event && eventsQueue) {
-		// setTimeout(() => {
-			eventsQueue.add(event);
-		// }, 1000)
-	}
 </script>
 
 <div class='fixed top-0 bg-white w-full z-10'>
@@ -108,11 +43,11 @@
 			<span class='min-w-[15px] min-h-[1px] fake-padding'></span>
 			{#each categories as category}
 				<li
-					class='text-xbase whitespace-nowrap
+					class='text-xbase whitespace-nowrap text-black3
 								px-2.5 py-1.75 align-middle text-center
 								flex justify-center align-center cursor-pointer'
 					on:click={() => clickItemHandler(category)}
-					bind:this={menuItemsElems[category]}
+					bind:this={carouselItems[category]}
 				>
 					{category}
 				</li>

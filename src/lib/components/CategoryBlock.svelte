@@ -4,11 +4,12 @@
 	import ProductsSkeleton from './ProductsSkeleton.svelte';
 	import { onDestroy } from 'svelte';
 	import { createEventDispatcher } from 'svelte';
+	import { MENU_EVENT_TYPES } from '../constants';
 	const dispatch = createEventDispatcher();
 
-	export let category;
+	export let category: string;
 	export let unobserve = () => null;
-	export let isVisible;
+	export let isVisible: boolean;
 	export let products: any[] = [];
 
 	$: if (products.length === 0 && isVisible && category) {
@@ -17,14 +18,12 @@
 		}
 
 	$: if (isVisible) {
-		console.log('dispatch visible ', category);
-		dispatch('visible', {
+		dispatch(MENU_EVENT_TYPES.CATEGORY_VISIBLE, {
 			category,
 		})
 	}
 
 	onDestroy(unobserve);
-
 </script>
 
 
@@ -48,7 +47,7 @@
 			{/each}
 		</div>
 	{:else}
-		<ProductsSkeleton count={4}/>
+		<ProductsSkeleton count={5}/>
 	{/if}
 </div>
 

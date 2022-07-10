@@ -1,4 +1,4 @@
 export const MENU_EVENT_TYPES = {
-	CLICK: 'click',
-	VISIBLE: 'visible',
+	CAROUSEL_CLICK: 'carousel-click',
+	CATEGORY_VISIBLE: 'category-visible',
 }
