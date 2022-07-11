@@ -1,5 +1,5 @@
 import type {RequestHandler} from '@sveltejs/kit'
-import { getProduct } from '../../lib/resources/api';
+import { getProduct } from '$lib/resources/api';
 
 export const get: RequestHandler = async ({params}) => {
 	const id = params.id;

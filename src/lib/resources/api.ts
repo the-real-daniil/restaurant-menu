@@ -14,6 +14,7 @@ const PRODUCTS_MOCKS =  [
 		title: 'Бургер с беконом',
 		price: '565 ₽',
 		weight: '280 г',
+		description: 'Бифштекс из мраморной говядины, фирменный копченный сосус, сыр гауда, помидоры, красный лук'
 	},
 	{
 		id: 2,
@@ -21,6 +22,7 @@ const PRODUCTS_MOCKS =  [
 		title: 'Бургер с беконом',
 		price: '565 ₽',
 		weight: '280 г',
+		description: 'Бифштекс из мраморной говядины, фирменный копченный сосус, сыр гауда, помидоры, красный лук'
 	},
 	{
 		id: 3,
@@ -28,6 +30,7 @@ const PRODUCTS_MOCKS =  [
 		title: 'Бургер с беконом',
 		price: '565 ₽',
 		weight: '280 г',
+		description: 'Бифштекс из мраморной говядины, фирменный копченный сосус, сыр гауда, помидоры, красный лук'
 	},
 	{
 		id: 4,
@@ -35,6 +38,7 @@ const PRODUCTS_MOCKS =  [
 		title: 'Бургер с беконом',
 		price: '565 ₽',
 		weight: '280 г',
+		description: 'Бифштекс из мраморной говядины, фирменный копченный сосус, сыр гауда, помидоры, красный лук'
 	},
 	{
 		id: 5,
@@ -42,6 +46,7 @@ const PRODUCTS_MOCKS =  [
 		title: 'Бургер с беконом',
 		price: '565 ₽',
 		weight: '280 г',
+		description: 'Бифштекс из мраморной говядины, фирменный копченный сосус, сыр гауда, помидоры, красный лук'
 	},
 ]
 export const CATEGORIES_MOCKS = ['Популярные блюда', 'Суши', 'Бургеры', 'Пицца', 'Напитки', 'Десерты', 'Морепродукты']
@@ -55,31 +60,28 @@ const CART_ID = 1;
 // 		return EMPTY_ARRAY;
 // 	});
 
-function sleep(milliseconds: number) {
-	const date = Date.now();
-	let currentDate = null;
-	do {
-		currentDate = Date.now();
-	} while (currentDate - date < milliseconds);
-}
-
 export const getProducts = async () => Promise.resolve(PRODUCTS_MOCKS);
 export const getProductsByCategory = (category: string): Promise<any[]> =>
 	new Promise((resolve) => {
 			setTimeout(() => resolve(PRODUCTS_MOCKS), 1000)
-	})
+	});
 
 
-export const getCategories = async () => {
-	sleep(200);
-	return Promise.resolve(CATEGORIES_MOCKS);
-};
+export const getCategories = async () =>
+	new Promise((resolve) => {
+		setTimeout(() => resolve(CATEGORIES_MOCKS), 1000)
+	});
 
-export const getProduct = (id: number) => api.get(`/products/${id}`)
-	.then(res => res.data)
-	.catch(err => {
-		console.error(err);
-		return EMPTY_OBJECT;
+// export const getProduct = (id: number) => api.get(`/products/${id}`)
+// 	.then(res => res.data)
+// 	.catch(err => {
+// 		console.error(err);
+// 		return EMPTY_OBJECT;
+// 	});
+
+export const getProduct = (id: number) =>
+	new Promise((resolve) => {
+		setTimeout(() => resolve(PRODUCTS_MOCKS[0]), 1000)
 	});
 
 async function* getCartItemsGenerator() {

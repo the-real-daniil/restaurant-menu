@@ -35,7 +35,9 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@types/scroll-lock": "^2.1.0",
 		"animated-scroll-to": "^2.3.0",
-		"axios": "^0.27.2"
+		"axios": "^0.27.2",
+		"scroll-lock": "^2.1.5"
 	}
 }

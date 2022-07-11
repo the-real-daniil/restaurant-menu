@@ -43,7 +43,7 @@
 			<span class='min-w-[15px] min-h-[1px] fake-padding'></span>
 			{#each categories as category}
 				<li
-					class='text-xbase whitespace-nowrap text-black3
+					class='text-xxbase whitespace-nowrap text-black3
 								px-2.5 py-1.75 align-middle text-center
 								flex justify-center align-center cursor-pointer'
 					on:click={() => clickItemHandler(category)}
