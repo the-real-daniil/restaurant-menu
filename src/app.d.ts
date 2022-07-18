@@ -4,12 +4,28 @@
 // for information about these interfaces
 declare namespace App {
 	type Product = {
-		title: string,
-		image: string,
+		name: string,
 		id: number,
+		image: string,
+		weight: number,
 		price: number,
-		description: string,
-		count?: number,
+		available: boolean,
+		description?: string,
+		sale_price?: number,
+		category?: string
+	}
+
+	type CartItem = {
+		count: number,
+		id?: number,
+		product: Product,
+		product_id: number,
+		user_id?: string,
+	}
+
+	type Cart = {
+		items: CartItem[],
+		totalAmount: number,
 	}
 
 	// interface Locals {}

@@ -1,29 +1,34 @@
 <script lang="ts">
-	import cart, {removeFromCart } from '$lib/stores/cart';
-	import {addToCart} from '$lib/resources/api';
+	import cart from '$lib/stores/cart';
+	import Button from './Button.svelte';
+	import { handleAddToCart, handleRemoveFromCart } from '../handlers/cart';
 
 	export let id;
+	export let counterOnly = false;
 
-	const onAddToCart = (e) => {
+	const onAddToCart = async (e) => {
 		e.preventDefault();
-		addToCart(id);
+		e.stopPropagation();
+		await handleAddToCart(id)
 	}
-	const onRemoveFromCart = (e) => {
+	const onRemoveFromCart = async (e) => {
+		e.stopPropagation();
 		e.preventDefault();
-		removeFromCart(id);
+		await handleRemoveFromCart(id);
 	}
+
 	let isAdded = false;
-	let count = 1;
-	// $: {
-	// 	isAdded = $cart.items.some(item => item.id === id);
-	// 	if (isAdded) {
-	// 		count = $cart.items.find(item => item.id === id).count;
-	// 	}
-	// }
+	let count;
+	$: {
+		isAdded = $cart.items.some(item => item.product_id === id);
+		if (isAdded) {
+			count = $cart.items.find(item => item.product_id === id).count;
+		}
+	}
 </script>
 
-{#if (isAdded)}
-	<div class='flex flex-row  justify-between mb-2 w-[calc(100%-30px)] mx-2'>
+{#if (isAdded || counterOnly)}
+	<div class='flex flex-row items-center justify-between w-full h-[35px]'>
 		<button
 			class='text-center rounded w-33 flex-1'
 			on:click={onRemoveFromCart}>
@@ -39,9 +44,9 @@
 		</button>
 	</div>
 {:else}
-	<button on:click={onAddToCart} class='rounded bg-bg-gray mb-2 w-[calc(100%-30px)] mx-2'>
+	<Button onClick={onAddToCart} size='s' type='default'>
 		<span class='py-2 text-xs block'>Добавить</span>
-	</button>
+	</Button>
 {/if}
 
 

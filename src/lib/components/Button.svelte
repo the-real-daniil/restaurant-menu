@@ -1,22 +1,30 @@
 <script lang="ts">
 	export let onClick = null;
-	export let type: 'action' | 'default' = 'default'
-	export let size: 's' | 'm';
+	export let type: 'action' | 'default' | 'danger' = 'default'
+	export let size: 's' | 'm' = 's';
 	export let classes: string;
 
-	const getBackgroundCssClass = () => {
-		switch (type) {
-			case 'action': return 'bg-yellow';
-			case 'default': return 'bg-bg-gray';
-			default: return ''
-		}
+	let backgroundCssClass = '';
+	$: switch (type) {
+		case 'action':
+			backgroundCssClass = 'bg-yellow';
+			break;
+		case 'default':
+			backgroundCssClass = 'bg-bg-gray';
+			break;
+		case 'danger':
+			backgroundCssClass = 'bg-red';
+			break;
 	}
-	const getHeightCssClasses = () => {
-		switch (size) {
-			case 's': return 'h-[35px]';
-			case 'm': return 'h-[49px]';
-			default: return ''
-		}
+
+	let heightCssClass = ''
+	$: switch (size) {
+		case 's':
+			heightCssClass = 'h-[35px]';
+			break;
+		case 'm':
+			heightCssClass = 'h-[49px]';
+			break;
 	}
 </script>
 
@@ -24,8 +32,8 @@
 				class={`
 				rounded w-full
 				${classes}
-				${getBackgroundCssClass()}
-				${getHeightCssClasses()}`
+				${backgroundCssClass}
+				${heightCssClass}`
 				}
 >
 	<slot/>

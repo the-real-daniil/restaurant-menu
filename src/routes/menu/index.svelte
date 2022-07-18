@@ -1,3 +1,28 @@
+<script context="module" lang="ts">
+	import { createUser, getCategories, getIsRegistered } from '$lib/resources/api.js';
+	import { handleFetchCart } from '$lib/handlers/cart';
+	export async function load() {
+		try {
+			const categories = await getCategories();
+			const isRegistered = await getIsRegistered();
+			if (!isRegistered) {
+				await createUser();
+			}
+			await handleFetchCart();
+			return {
+				status: 200,
+				props: {
+					categories,
+				}
+			}
+		} catch (err) {
+			return {
+				status: 500,
+			}
+		}
+	}
+</script>
+
 <script lang="ts">
 	import { disablePageScroll, enablePageScroll } from 'scroll-lock';
 	import animateScrollTo from 'animated-scroll-to';
@@ -11,11 +36,12 @@
 	import Swipable from '$lib/components/Swipable.svelte';
 
 	export let categories: string[]
-	export let scrollBar: HTMLElement;
-	export let bubble: HTMLElement;
-	export let carouselXPadding: number;
-	export let openedProduct: App.Product | null = null;
-	export const carouselItems: {[category: string]: HTMLElement} = {};
+
+	let openedProduct: App.Product | null = null;
+	const carouselItems: {[category: string]: HTMLElement} = {};
+	let carouselXPadding: number;
+	let scrollBar: HTMLElement;
+	let bubble: HTMLElement;
 
 	/** сдвиг и ресайз бабла */
 	const moveBubble = async (category: string) => {
@@ -34,11 +60,11 @@
 		if (scrollBar && carouselItems[category]) {
 			const left = carouselItems[category].getBoundingClientRect().left;
 			const scrollLeft = scrollBar.scrollLeft;
-			// TODO: animateScrollTo не работает в мобильном браузере
 			await animateScrollTo([scrollLeft + left - carouselXPadding + DELTA, 0], {
-				maxDuration: 200,
-				minDuration: 100,
-				elementToScroll: scrollBar
+				maxDuration: 300,
+				minDuration: 200,
+				elementToScroll: scrollBar,
+				cancelOnUserAction: false,
 			});
 		}
 	}
@@ -82,7 +108,6 @@
 	const eventsQueue = AsyncQueue
 		.channels(1)
 		.process(eventsHandler)
-		.success(() => console.log('event has been handled'))
 		.failure((err, task) => console.error(`failure: ${err} ${task.category}`))
 
 	let first = true;
@@ -113,7 +138,7 @@
 		eventsQueue.add(event)
 	}
 
-	const onProductItemClick = (event, product) => {
+	const openProductCard = (product) => {
 		disablePageScroll();
 		openedProduct = product;
 	}
@@ -122,6 +147,7 @@
 		enablePageScroll()
 		openedProduct = null;
 	};
+
 </script>
 
 <svelte:head>
@@ -144,13 +170,15 @@
 					category={category}
 					isVisible={percent > 20}
 					unobserve={unobserve}
-					onProductItemClick={onProductItemClick}
+					openProductCard={openProductCard}
 					on:category-visible={categoryVisibleEventHandler}
 				/>
 			</Visibility>
 		{/each}
 	</div>
-	<CartButton/>
+	<div class='fixed bottom-0 left-0 right-0'>
+		<CartButton actionText='Далее'/>
+	</div>
 </div>
 
 {#if (openedProduct)}
@@ -162,7 +190,9 @@
 
 {#if (openedProduct)}
 	<Swipable classes='fixed bottom-0 z-20' onClose={closeProductCard}>
-		<Product product={openedProduct}/>
+		<div>
+			<div class='w-[50px] h-[5px] mb-2 bg-white rounded-sm mx-auto'></div>
+			<Product product={openedProduct} closeProductCard={closeProductCard}/>
+		</div>
 	</Swipable>
 {/if}
-

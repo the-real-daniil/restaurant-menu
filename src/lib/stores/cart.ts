@@ -1,54 +1,47 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 
-export type Cart = {
-	items: CartItem[],
-	total: number,
-}
-
-export type CartItem = {
-	id: number,
-	count: number;
-}
-
-const cart = writable<Cart>({
+const cart = writable<App.Cart>({
 	items: [],
-	total: 0,
+	totalAmount: 0,
 })
 
-export const addToCart = (id: number) => {
+export const setCartItem = (cartItem: App.CartItem) => {
 	cart.update(cart => {
-		const item = cart.items.find(item => item.id === id)
-		if (item) {
+		const existedCartItem = cart.items.find(item => item.product_id === cartItem.product_id)
+		if (existedCartItem) {
 			return {
-				items: cart.items.map(item => item.id === id ? {...item, count: item.count + 1} : item),
-				total: ++cart.total,
+				items: cart.items.map(
+					item => item.product_id === cartItem.product_id
+									? cartItem
+									: item
+				),
+				totalAmount: cart.totalAmount + cartItem.product.price,
 			};
 		}
 		return {
-			items: [...cart.items, {id, count: 1}],
-			total: ++cart.total,
+			items: [...cart.items, cartItem],
+			totalAmount: cart.totalAmount + cartItem.product.price,
 		}
 	})
 }
 
-export const removeFromCart = (id: number) => {
+export const removeFromCart = (productId: number) => {
 	cart.update(cart => {
-		const item = cart.items.find(item => item.id === id)
-		if (item) {
-			if (item.count <= 1) {
-				return {
-					items: cart.items.filter(item => item.id !== id),
-					total: --cart.total,
-				}
-			} else {
-				return {
-					items: cart.items.map(item => item.id === id ? {...item, count: item.count - 1} : item),
-					total: --cart.total,
-				};
+		const existedCartItem = cart.items.find(item => item.product_id === productId)
+		if (existedCartItem) {
+			return {
+				items: cart.items.filter(item => item.product_id !== productId),
+				totalAmount: cart.totalAmount - existedCartItem.product.price * existedCartItem.count,
 			}
 		}
 		return cart;
 	})
+}
+
+export const updateCartIfChanged = (updatedCart: App.Cart) => {
+	if (get(cart).totalAmount !== updatedCart.totalAmount) {
+		cart.set(updatedCart);
+	}
 }
 
 export default cart;
